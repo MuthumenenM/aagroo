@@ -472,6 +472,16 @@ hr{border:none;border-top:1px solid var(--border);margin:20px 0}
             <div class="card" style="margin-bottom:20px">
               <div style="font-size:14px;font-weight:600;margin-bottom:14px">Create post</div>
               <div class="form-row"><textarea rows="4" placeholder="Share your farming experience, tips, or questions…" id="post-input"></textarea></div>
+              <div class="form-row" style="margin-bottom:12px">
+                <select id="post-category" style="padding:6px 10px;font-size:13px">
+                  <option value="General">Category: General</option>
+                  <option value="Crop Advice">Category: Crop Advice</option>
+                  <option value="Disease Discussion">Category: Disease Discussion</option>
+                  <option value="Government Schemes">Category: Government Schemes</option>
+                  <option value="Organic Farming">Category: Organic Farming</option>
+                  <option value="Equipment">Category: Equipment</option>
+                </select>
+              </div>
               <div style="display:flex;gap:10px;align-items:center">
                 <button class="btn btn-sm">📷 Photo</button>
                 <button class="btn btn-sm">🎬 Video</button>
@@ -845,6 +855,10 @@ function showPage(page, btn) {
   const titles = {dashboard:'Dashboard',disease:'Disease Detection',weather:'Weather Forecast',market:'Marketplace',vehicle:'Vehicle Booking',community:'Community',schemes:'Government Schemes',crop:'Crop Advisor',chatbot:'AI Farming Assistant',profile:'My Profile'};
   document.getElementById('topbar-title').textContent = titles[page] || page;
   state.currentPage = page;
+
+  if (page === 'community') {
+    fetchCommunityPosts();
+  }
 }
 
 // ====== INIT ======
@@ -1375,8 +1389,9 @@ async function createPost() {
   if (!text) { showToast('Write something first'); return; }
 
   const author_name = state.user?.name || 'Ravi Kumar';
-  const location = 'Thoothukudi';
-  const category = 'Crop Advice';
+  const location = state.user?.district || 'Thoothukudi';
+  const categorySelect = document.getElementById('post-category');
+  const category = categorySelect ? categorySelect.value : 'General';
 
   const newPostData = {
     user_id: 1,
@@ -1400,7 +1415,9 @@ async function createPost() {
     if (res.ok) {
       document.getElementById('post-input').value = '';
       showToast('Post created & saved in database! 🎉');
-      await fetchCommunityPosts();
+      // Reset filter to All so post shows immediately
+      state.activeCommunityFilter = 'All';
+      await renderCommunity();
       return;
     }
   } catch (err) {
