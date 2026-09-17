@@ -1275,12 +1275,12 @@ function renderBookingHistory() {
 }
 
 // ====== COMMUNITY ======
-function renderCommunity() {
+async function renderCommunity() {
   const cats = ['All','Crop Advice','Disease Discussion','Government Schemes','Organic Farming','Equipment'];
   document.getElementById('community-cats').innerHTML = cats.map(c=>`
     <div class="chip ${c===state.activeCommunityFilter?'active':''}" onclick="filterCommunity('${c}')">${c}</div>
   `).join('');
-  renderPosts();
+  await fetchCommunityPosts();
   document.getElementById('popular-farmers').innerHTML = farmers.map(f=>`
     <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="width:36px;height:36px;border-radius:50%;background:${f.color};display:flex;align-items:center;justify-content:center;font-size:16px">${f.emoji}</div>
@@ -1295,12 +1295,47 @@ function filterCommunity(cat) {
   renderCommunity();
 }
 
+async function fetchCommunityPosts() {
+  try {
+    const apiEndpoint = window.location.origin.includes('8000') || window.location.origin.includes('onrender.com') 
+      ? '/api/community/posts' 
+      : 'https://aagroo-1.onrender.com/api/community/posts';
+    
+    const catQuery = state.activeCommunityFilter && state.activeCommunityFilter !== 'All' 
+      ? `?category=${encodeURIComponent(state.activeCommunityFilter)}` 
+      : '';
+    
+    const res = await fetch(apiEndpoint + catQuery);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.posts && data.posts.length > 0) {
+        state.dbPosts = data.posts.map(p => ({
+          id: p.id,
+          author: p.author_name || 'Farmer',
+          loc: p.location || 'Tamil Nadu',
+          avatar: (p.author_name || 'F').charAt(0).toUpperCase(),
+          color: p.color || 'var(--accent)',
+          cat: p.category || 'General',
+          text: p.content,
+          likes: p.likes_count || 0,
+          comments: p.comments_count || 0,
+          time: p.created_at ? new Date(p.created_at).toLocaleDateString('en-IN') : 'Recently'
+        }));
+      }
+    }
+  } catch (err) {
+    console.warn("Using local posts fallback:", err);
+  }
+  renderPosts();
+}
+
 function renderPosts() {
-  const filtered = state.activeCommunityFilter==='All' ? posts : posts.filter(p=>p.cat===state.activeCommunityFilter);
+  const currentPosts = (state.dbPosts && state.dbPosts.length > 0) ? state.dbPosts : posts;
+  const filtered = state.activeCommunityFilter==='All' ? currentPosts : currentPosts.filter(p=>p.cat===state.activeCommunityFilter);
   document.getElementById('posts-feed').innerHTML = filtered.map(p=>`
     <div class="post-card">
       <div class="post-header">
-        <div class="post-avatar" style="background:${p.color};color:#fff">${p.avatar}</div>
+        <div class="post-avatar" style="background:${p.color || 'var(--accent)'};color:#fff">${p.avatar || 'F'}</div>
         <div>
           <div style="font-size:14px;font-weight:600">${p.author}</div>
           <div style="font-size:12px;color:var(--text3)">📍 ${p.loc} · ${p.time}</div>
@@ -1319,16 +1354,61 @@ function renderPosts() {
   `).join('');
 }
 
-function likePost(id, btn) {
+async function likePost(id, btn) {
   if (state.likedPosts.has(id)) state.likedPosts.delete(id);
-  else state.likedPosts.add(id);
+  else {
+    state.likedPosts.add(id);
+    try {
+      const apiEndpoint = window.location.origin.includes('8000') || window.location.origin.includes('onrender.com') 
+        ? `/api/community/posts/${id}/like` 
+        : `https://aagroo-1.onrender.com/api/community/posts/${id}/like`;
+      await fetch(apiEndpoint, { method: 'POST' });
+    } catch (e) {
+      console.warn("Like API error:", e);
+    }
+  }
   renderPosts();
 }
 
-function createPost() {
+async function createPost() {
   const text = document.getElementById('post-input').value.trim();
   if (!text) { showToast('Write something first'); return; }
-  posts.unshift({id:Date.now(),author:state.user?.name||'You',loc:'Thoothukudi',avatar:(state.user?.name||'Y').charAt(0).toUpperCase(),color:'var(--accent)',cat:'Crop Advice',text,likes:0,comments:0,time:'Just now'});
+
+  const author_name = state.user?.name || 'Ravi Kumar';
+  const location = 'Thoothukudi';
+  const category = 'Crop Advice';
+
+  const newPostData = {
+    user_id: 1,
+    author_name,
+    location,
+    category,
+    content: text
+  };
+
+  try {
+    const apiEndpoint = window.location.origin.includes('8000') || window.location.origin.includes('onrender.com') 
+      ? '/api/community/posts' 
+      : 'https://aagroo-1.onrender.com/api/community/posts';
+
+    const res = await fetch(apiEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newPostData)
+    });
+
+    if (res.ok) {
+      document.getElementById('post-input').value = '';
+      showToast('Post created & saved in database! 🎉');
+      await fetchCommunityPosts();
+      return;
+    }
+  } catch (err) {
+    console.warn("Fallback to local post creation:", err);
+  }
+
+  // Fallback if offline
+  posts.unshift({id:Date.now(),author:author_name,loc:location,avatar:author_name.charAt(0).toUpperCase(),color:'var(--accent)',cat:category,text,likes:0,comments:0,time:'Just now'});
   document.getElementById('post-input').value = '';
   renderPosts();
   showToast('Post shared with farmers!');
