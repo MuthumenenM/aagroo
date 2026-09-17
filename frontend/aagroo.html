@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aagroo</title>
+l<style>
+:root {
+  --green-50: #EAF3DE; --green-100: #C0DD97; --green-200: #97C459;
+  --green-600: #3B6D11; --green-700: #27500A; --green-800: #173404;
+  --teal-50: #E1F5EE; --teal-200: #5DCAA5; --teal-600: #0F6E56;
+  --amber-50: #FAEEDA; --amber-200: #EF9F27; --amber-600: #854F0B;
+  --blue-50: #E6F1FB; --blue-200: #85B7EB; --blue-600: #185FA5;
+  --purple-50: #EEEDFE; --purple-200: #AFA9EC; --purple-600: #534AB7;
+  --coral-50: #FAECE7; --coral-200: #F0997B; --coral-600: #993C1D;
+  --gray-50: #F1EFE8; --gray-100: #D3D1C7; --gray-400: #888780;
+  --bg: #0d1a0a; --bg2: #111f0d; --bg3: #162610;
+  --surface: #1a2e14; --surface2: #1f381a; --surface3: #243d1e;
+  --border: rgba(96,160,64,0.18); --border2: rgba(96,160,64,0.3);
+  --text: #e8f5d0; --text2: #a8c880; --text3: #6a9050;
+  --accent: #5db535; --accent2: #7dd44a; --accent-dim: rgba(93,181,53,0.15);
+  --radius: 12px; --radius-sm: 8px; --radius-lg: 16px;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+/* LAYOUT */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:72px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:4px;z-index:100;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:60px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0}
+.content{flex:1;overflow-y:auto;padding:24px}
+/* SIDEBAR */
+.logo-mark{width:40px;height:40px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:20px;cursor:pointer}
+.nav-btn{width:48px;height:48px;border-radius:var(--radius-sm);border:none;background:transparent;color:var(--text3);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:.15s;font-size:10px;position:relative}
+.nav-btn:hover{background:var(--surface);color:var(--text2)}
+.nav-btn.active{background:var(--accent-dim);color:var(--accent)}
+.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-label{font-size:9px;font-weight:500;letter-spacing:.02em}
+/* TOPBAR */
+.page-title{font-size:17px;font-weight:600;color:var(--text);flex:1}
+.weather-pill{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:#fff;cursor:pointer;flex-shrink:0}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.card-sm{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px}
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+/* SECTION */
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:16px;font-weight:600;color:var(--text)}
+.section-action{font-size:13px;color:var(--accent);cursor:pointer;background:none;border:none}
+/* METRIC */
+.metric{text-align:center}
+.metric-val{font-size:28px;font-weight:700;color:var(--accent2);line-height:1}
+.metric-label{font-size:12px;color:var(--text3);margin-top:4px}
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-green{background:var(--green-50);color:var(--green-600)}
+.badge-blue{background:var(--blue-50);color:var(--blue-600)}
+.badge-amber{background:var(--amber-50);color:var(--amber-600)}
+.badge-red{background:#fce8e8;color:#a32d2d}
+.badge-teal{background:var(--teal-50);color:var(--teal-600)}
+.badge-purple{background:var(--purple-50);color:var(--purple-600)}
+/* BTN */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text);font-size:14px;font-weight:500;cursor:pointer;transition:.15s;font-family:var(--font)}
+.btn:hover{background:var(--surface2)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.btn-sm{padding:7px 14px;font-size:13px}
+/* INPUT */
+input,select,textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:10px 14px;font-size:14px;font-family:var(--font);width:100%;outline:none;transition:.15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+label{font-size:13px;color:var(--text2);margin-bottom:6px;display:block}
+.form-row{margin-bottom:16px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* SCREEN */
+.screen{display:none}
+.screen.active{display:block}
+/* AUTH */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px}
+.auth-card{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px}
+.auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.auth-logo-icon{width:48px;height:48px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.auth-title{font-size:22px;font-weight:700;color:var(--text)}
+.auth-sub{font-size:14px;color:var(--text2);margin-top:2px}
+.tab-row{display:flex;gap:0;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:20px}
+.tab-btn{flex:1;padding:8px;border:none;background:transparent;color:var(--text2);border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;transition:.15s;font-family:var(--font)}
+.tab-btn.active{background:var(--accent);color:#fff}
+.divider{text-align:center;color:var(--text3);font-size:12px;margin:16px 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:calc(50% - 20px);height:1px;background:var(--border2)}
+.divider::before{left:0}.divider::after{right:0}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);cursor:pointer;font-size:14px;font-weight:500;width:100%;font-family:var(--font);transition:.15s}
+.google-btn:hover{background:var(--surface3)}
+.auth-switch{text-align:center;font-size:13px;color:var(--text2);margin-top:20px}
+.auth-switch a{color:var(--accent);cursor:pointer;text-decoration:none}
+/* DASHBOARD */
+.welcome-banner{background:linear-gradient(135deg,var(--surface2) 0%,var(--surface3) 100%);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:24px;margin-bottom:24px;position:relative;overflow:hidden}
+.welcome-banner::after{content:'🌾';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:60px;opacity:.15}
+.welcome-text{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
+.welcome-sub{font-size:14px;color:var(--text2)}
+.quick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.quick-card:hover{background:var(--surface2);border-color:var(--border2);transform:translateY(-2px)}
+.quick-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.quick-name{font-size:14px;font-weight:600;color:var(--text)}
+.quick-desc{font-size:12px;color:var(--text3);margin-top:2px}
+/* WEATHER */
+.weather-card{background:linear-gradient(135deg,var(--teal-600) 0%,#0a4d3a 100%);border-radius:var(--radius);padding:24px;color:#fff}
+.weather-temp{font-size:52px;font-weight:700;line-height:1}
+.weather-cond{font-size:16px;opacity:.9;margin-top:4px}
+.weather-row{display:flex;gap:20px;margin-top:16px}
+.weather-stat{text-align:center}
+.weather-stat-val{font-size:16px;font-weight:600}
+.weather-stat-label{font-size:11px;opacity:.7;margin-top:2px}
+.forecast-day{background:rgba(255,255,255,.1);border-radius:8px;padding:12px;text-align:center;font-size:12px}
+.forecast-emoji{font-size:20px;margin:6px 0}
+/* DISEASE */
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:48px;text-align:center;cursor:pointer;transition:.15s;background:var(--surface)}
+.upload-zone:hover{border-color:var(--accent);background:var(--accent-dim)}
+.upload-icon{font-size:48px;margin-bottom:12px}
+.disease-result{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:20px;margin-top:20px}
+.disease-name{font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px}
+.conf-bar{background:var(--surface3);border-radius:20px;height:8px;margin:8px 0}
+.conf-fill{height:8px;border-radius:20px;background:var(--accent)}
+.treatment-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.treatment-item:last-child{border-bottom:none}
+/* MARKET */
+.product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:.15s}
+.product-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.product-img{height:140px;display:flex;align-items:center;justify-content:center;font-size:56px;background:var(--surface2)}
+.product-info{padding:14px}
+.product-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.product-price{font-size:18px;font-weight:700;color:var(--accent2)}
+.star-row{display:flex;gap:2px;color:#f0a500;font-size:13px}
+/* COMMUNITY */
+.post-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.post-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.post-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.post-body{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px}
+.post-actions{display:flex;gap:20px}
+.post-action{background:none;border:none;color:var(--text3);cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;font-family:var(--font);transition:.15s}
+.post-action:hover{color:var(--accent)}
+.post-action.liked{color:#e24b4a}
+/* VEHICLE */
+.vehicle-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;gap:16px;align-items:center;cursor:pointer;transition:.15s}
+.vehicle-card:hover{border-color:var(--border2)}
+.vehicle-icon{font-size:44px;width:72px;text-align:center;flex-shrink:0}
+.vehicle-info{flex:1}
+.vehicle-name{font-size:16px;font-weight:600}
+.vehicle-price{font-size:14px;color:var(--accent2);font-weight:600;margin-top:4px}
+.vehicle-meta{font-size:12px;color:var(--text3);margin-top:4px}
+/* SCHEMES */
+.scheme-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
+.scheme-title{font-size:15px;font-weight:600;margin-bottom:6px}
+.scheme-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px}
+/* CROP RECOMMENDER */
+.crop-result{background:var(--surface2);border:1px solid var(--accent);border-radius:var(--radius);padding:20px;margin-top:20px}
+.crop-name{font-size:20px;font-weight:700;color:var(--accent2);display:flex;align-items:center;gap:10px}
+/* PROFILE */
+.profile-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;text-align:center;margin-bottom:20px}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;margin:0 auto 16px}
+.stat-row{display:flex;justify-content:center;gap:32px;margin-top:16px}
+/* CHATBOT */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 108px)}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+.chat-msg{max-width:80%;padding:12px 16px;border-radius:var(--radius);font-size:14px;line-height:1.6}
+.chat-msg.user{background:var(--accent);color:#fff;align-self:flex-end}
+.chat-msg.bot{background:var(--surface2);color:var(--text);align-self:flex-start;border:1px solid var(--border)}
+.chat-input-row{padding:16px;background:var(--bg2);border-top:1px solid var(--border);display:flex;gap:12px}
+.chat-input{flex:1}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;display:none}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:28px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:20px}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface3);border:1px solid var(--accent);border-radius:var(--radius-sm);padding:14px 20px;font-size:14px;color:var(--text);z-index:2000;transform:translateY(100px);opacity:0;transition:.3s;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+/* LOADING */
+.loading-ring{display:inline-block;width:24px;height:24px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+/* MISC */
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.chip{padding:6px 14px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;transition:.15s}
+.chip:hover,.chip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.progress-bar{background:var(--surface3);border-radius:4px;height:6px;overflow:hidden}
+.progress-fill{height:6px;border-radius:4px;background:var(--accent);transition:width .5s}
+.news-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.news-item:last-child{border-bottom:none}
+.news-emoji{font-size:28px;flex-shrink:0}
+.news-title{font-size:14px;font-weight:500;margin-bottom:4px;color:var(--text)}
+.news-meta{font-size:12px;color:var(--text3)}
+.seven-day{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:16px}
+hr{border:none;border-top:1px solid var(--border);margin:20px 0}
+.empty-state{text-align:center;padding:48px;color:var(--text3)}
+.empty-state div:first-child{font-size:48px;margin-bottom:12px}
+@media(max-width:768px){
+  .sidebar{width:56px}.grid-3{grid-template-columns:1fr 1fr}.grid-4{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}.seven-day{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREENS -->
+<div id="auth-screen">
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">🌿</div>
+      <div>
+        <div class="auth-title">AgriConnect AI</div>
+        <div style="font-size:13px;color:var(--text2)">Smart farming platform</div>
+      </div>
+    </div>
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchAuthTab('login',this)">Sign In</button>
+      <button class="tab-btn" onclick="switchAuthTab('register',this)">Register</button>
+    </div>
+    <!-- LOGIN -->
+    <div id="login-form">
+      <div class="form-row">
+        <label>Email or mobile number</label>
+        <input type="text" placeholder="farmer@example.com" id="login-email">
+      </div>
+      <div class="form-row">
+        <label>Password</label>
+        <input type="password" placeholder="Enter password" id="login-pass">
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <a style="font-size:13px;color:var(--accent);cursor:pointer" onclick="showForgot()">Forgot password?</a>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()">Sign In</button>
+      <div class="divider">or continue with</div>
+      <button class="google-btn" onclick="googleLogin()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.859-3.048.859-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.705A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.705V4.963H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.037l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.963L3.964 7.295C4.672 5.168 6.656 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+    </div>
+    <!-- REGISTER -->
+    <div id="register-form" style="display:none">
+      <div class="form-grid">
+        <div class="form-row"><label>Full name</label><input type="text" placeholder="Ravi Kumar" id="reg-name"></div>
+        <div class="form-row"><label>Mobile number</label><input type="text" placeholder="+91 9876543210" id="reg-phone"></div>
+        <div class="form-row"><label>Email</label><input type="email" placeholder="ravi@example.com"></div>
+        <div class="form-row"><label>District</label><input type="text" placeholder="Thoothukudi"></div>
+        <div class="form-row"><label>State</label><select><option>Tamil Nadu</option><option>Andhra Pradesh</option><option>Karnataka</option><option>Maharashtra</option><option>Punjab</option></select></div>
+        <div class="form-row"><label>Farmer type</label><select><option>Small (< 2 acres)</option><option>Medium (2-10 acres)</option><option>Large (> 10 acres)</option><option>Organic Farmer</option></select></div>
+      </div>
+      <div class="form-row"><label>Password</label><input type="password" placeholder="Create password"></div>
+      <div class="form-row"><label>Confirm password</label><input type="password" placeholder="Repeat password"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doRegister()">Create Account</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" style="display:none">
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo-mark" title="AgriConnect AI">🌿</div>
+    <nav style="display:flex;flex-direction:column;align-items:center;gap:4px;width:100%">
+      <button class="nav-btn active" onclick="showPage('dashboard',this)" title="Dashboard">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        <span class="nav-label">Home</span>
+      </button>
+      <button class="nav-btn" onclick="showPage('disease',this)" title="Disease Detection">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>
+        <span class="nav-label">Detect</span>
+      </button>
+      <button class="nav-btn" onclick="showPage('weather',this)" title="Weather">
+        <svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+        <span class="nav-label">Weather</span>
+      </button>
+      <button class="nav-btn" onclick="showPage('market',this)" title="Marketplace">
+        <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="nav-label">Market</span>
+      </button>
+      <button class="nav-btn" onclick="showPage('vehicle',this)" title="Vehicle Booking">
+        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8Z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        <span class="nav-label">Vehicles</span>
+      </button>
+      <button class="nav-btn" onclick="showPage('community',this)" title="Community">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="nav-label">Community</span>
+      </button>
+      <button class="nav-btn" onclick="showPage('schemes',this)" title="Schemes">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span class="nav-label">Schemes</span>
+      </button>
+      <button class="nav-btn" onclick="showPage('crop',this)" title="Crop Advisor">
+        <svg viewBox="0 0 24 24"><path d="M12 22V12"/><path d="M12 12C12 8 15 5 19 5s7 3 7 7-3 7-7 7"/><path d="M12 12C12 8 9 5 5 5 1 5-2 8-2 12s3 7 7 7"/></svg>
+        <span class="nav-label">Crops</span>
+      </button>
+      <button class="nav-btn" onclick="showPage('chatbot',this)" title="AI Chatbot">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10H2l2.29-2.29A9.94 9.94 0 0 1 2 12 10 10 0 0 1 12 2Z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
+        <span class="nav-label">AI Chat</span>
+      </button>
+      <button class="nav-btn" onclick="showPage('profile',this)" title="Profile" style="margin-top:auto">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="nav-label">Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="topbar-title">Dashboard</div>
+      <div class="weather-pill" id="topbar-weather">Loading weather...</div>
+      <div class="avatar" id="user-avatar" onclick="showPage('profile',null)">R</div>
+    </div>
+    <div class="content" id="content-area">
+
+      <!-- DASHBOARD PAGE -->
+      <div id="page-dashboard" class="screen active">
+        <div class="welcome-banner">
+          <div class="welcome-text" id="welcome-msg">Good morning, Ravi! 👋</div>
+          <div class="welcome-sub">Your farm in Thoothukudi is looking great today.</div>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="badge badge-green">🌡 Soil moisture: 68%</span>
+            <span class="badge badge-blue">💧 Next irrigation: 2 days</span>
+            <span class="badge badge-amber">📈 Rice price up 3% today</span>
+          </div>
+        </div>
+        <div class="section-head"><div class="section-title">Quick actions</div></div>
+        <div class="grid-4" style="margin-bottom:24px" id="quick-grid">
+          <div class="quick-card" onclick="showPage('disease',null)"><div class="quick-icon" style="background:var(--teal-50)">🔬</div><div><div class="quick-name">Detect Disease</div><div class="quick-desc">AI plant analysis</div></div></div>
+          <div class="quick-card" onclick="showPage('vehicle',null)"><div class="quick-icon" style="background:var(--amber-50)">🚜</div><div><div class="quick-name">Book Vehicle</div><div class="quick-desc">Tractor, harvester & more</div></div></div>
+          <div class="quick-card" onclick="showPage('market',null)"><div class="quick-icon" style="background:var(--blue-50)">🛒</div><div><div class="quick-name">Marketplace</div><div class="quick-desc">Seeds, fertilizers, tools</div></div></div>
+          <div class="quick-card" onclick="showPage('community',null)"><div class="quick-icon" style="background:var(--purple-50)">👥</div><div><div class="quick-name">Community</div><div class="quick-desc">Connect with farmers</div></div></div>
+          <div class="quick-card" onclick="showPage('schemes',null)"><div class="quick-icon" style="background:var(--coral-50)">📋</div><div><div class="quick-name">Govt Schemes</div><div class="quick-desc">Benefits & subsidies</div></div></div>
+          <div class="quick-card" onclick="showPage('crop',null)"><div class="quick-icon" style="background:var(--green-50)">🌾</div><div><div class="quick-name">Crop Advisor</div><div class="quick-desc">AI recommendations</div></div></div>
+          <div class="quick-card" onclick="showPage('weather',null)"><div class="quick-icon" style="background:var(--teal-50)">🌦</div><div><div class="quick-name">Weather</div><div class="quick-desc">7-day forecast</div></div></div>
+          <div class="quick-card" onclick="showPage('chatbot',null)"><div class="quick-icon" style="background:var(--purple-50)">🤖</div><div><div class="quick-name">AI Chatbot</div><div class="quick-desc">Expert farming advice</div></div></div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="section-head"><div class="section-title">Market prices</div><button class="section-action">View all</button></div>
+            <div class="card">
+              <div id="market-prices"></div>
+            </div>
+          </div>
+          <div>
+            <div class="section-head"><div class="section-title">Latest news</div><button class="section-action">View all</button></div>
+            <div class="card"><div id="news-feed"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISEASE PAGE -->
+      <div id="page-disease" class="screen">
+        <div class="section-head"><div class="section-title">Plant Disease Detection</div></div>
+        <div class="grid-2">
+          <div>
+            <div id="upload-area" class="upload-zone" onclick="triggerUpload()">
+              <div class="upload-icon">🌿</div>
+              <div style="font-size:16px;font-weight:600;margin-bottom:8px">Upload or capture plant image</div>
+              <div style="font-size:13px;color:var(--text3)">Supports JPG, PNG — tap to browse</div>
+              <input type="file" id="img-input" accept="image/*" style="display:none" onchange="analyzeDisease(this)">
+              <div style="margin-top:16px;display:flex;gap:10px;justify-content:center">
+                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();triggerUpload()">📁 Upload Image</button>
+                <button class="btn btn-sm" onclick="event.stopPropagation();useSampleImage()">🖼 Use Sample</button>
+              </div>
+            </div>
+            <div id="img-preview" style="display:none;margin-top:16px;text-align:center">
+              <img id="preview-img" style="max-width:100%;border-radius:var(--radius);border:1px solid var(--border2);max-height:300px">
+            </div>
+          </div>
+          <div>
+            <div id="disease-placeholder" class="card" style="text-align:center;padding:48px">
+              <div style="font-size:48px;margin-bottom:12px">🔬</div>
+              <div style="font-size:15px;color:var(--text2)">Upload a plant image to get AI disease analysis</div>
+              <div style="font-size:13px;color:var(--text3);margin-top:8px">Detects 10+ common crop diseases</div>
+            </div>
+            <div id="disease-result" style="display:none">
+              <div id="analyzing-state" style="text-align:center;padding:32px;display:none">
+                <div class="loading-ring" style="width:40px;height:40px;border-width:4px"></div>
+                <div style="margin-top:16px;color:var(--text2)">Analyzing with AI…</div>
+              </div>
+              <div id="result-content" style="display:none"></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:24px">
+          <div class="section-head"><div class="section-title">Detection history</div></div>
+          <div id="disease-history"></div>
+        </div>
+      </div>
+
+      <!-- WEATHER PAGE -->
+      <div id="page-weather" class="screen">
+        <div class="grid-2">
+          <div>
+            <div class="weather-card" id="weather-main"></div>
+            <div class="card" style="margin-top:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:12px">Farming alerts</div>
+              <div id="weather-alerts"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div style="font-size:14px;font-weight:600;margin-bottom:16px">7-day forecast</div>
+              <div class="seven-day" id="forecast-grid"></div>
+            </div>
+            <div class="card" style="margin-top:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:12px">Smart irrigation plan</div>
+              <div id="irrigation-plan"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MARKETPLACE PAGE -->
+      <div id="page-market" class="screen">
+        <div style="display:flex;gap:12px;margin-bottom:20px">
+          <input type="text" placeholder="Search seeds, fertilizers, tools…" style="flex:1" oninput="filterProducts(this.value)">
+          <button class="btn btn-sm">🔍</button>
+        </div>
+        <div class="chip-row" id="market-cats"></div>
+        <div class="grid-4" id="product-grid"></div>
+      </div>
+
+      <!-- VEHICLE PAGE -->
+      <div id="page-vehicle" class="screen">
+        <div class="grid-2">
+          <div>
+            <div class="section-head"><div class="section-title">Available vehicles</div></div>
+            <div id="vehicle-list"></div>
+          </div>
+          <div>
+            <div class="section-head"><div class="section-title">Book a vehicle</div></div>
+            <div class="card" id="booking-form-card">
+              <div id="selected-vehicle-info" style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+                <div style="color:var(--text3);font-size:14px">← Select a vehicle to book</div>
+              </div>
+              <div class="form-row"><label>Booking date</label><input type="date" id="book-date"></div>
+              <div class="form-grid">
+                <div class="form-row"><label>Start time</label><input type="time" id="book-time" value="08:00"></div>
+                <div class="form-row"><label>Duration (hrs)</label><select id="book-dur"><option>4</option><option>6</option><option>8</option><option selected>Full day (10)</option></select></div>
+              </div>
+              <div class="form-row"><label>Location / field address</label><input type="text" placeholder="Field near Tiruchendur road"></div>
+              <div id="price-summary" style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px;margin-bottom:16px;display:none">
+                <div style="font-size:13px;color:var(--text2)">Estimated cost</div>
+                <div style="font-size:22px;font-weight:700;color:var(--accent2)" id="price-display">₹0</div>
+              </div>
+              <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="confirmBooking()">Confirm & Pay</button>
+            </div>
+            <div style="margin-top:20px">
+              <div class="section-head"><div class="section-title">My bookings</div></div>
+              <div id="booking-history"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMMUNITY PAGE -->
+      <div id="page-community" class="screen">
+        <div class="grid-2" style="align-items:start">
+          <div>
+            <div class="chip-row" id="community-cats"></div>
+            <div id="posts-feed"></div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:20px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:14px">Create post</div>
+              <div class="form-row"><textarea rows="4" placeholder="Share your farming experience, tips, or questions…" id="post-input"></textarea></div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <button class="btn btn-sm">📷 Photo</button>
+                <button class="btn btn-sm">🎬 Video</button>
+                <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="createPost()">Post</button>
+              </div>
+            </div>
+            <div class="card">
+              <div style="font-size:14px;font-weight:600;margin-bottom:14px">Popular farmers</div>
+              <div id="popular-farmers"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHEMES PAGE -->
+      <div id="page-schemes" class="screen">
+        <div style="display:flex;gap:12px;margin-bottom:20px">
+          <input type="text" placeholder="Search schemes…" style="flex:1" oninput="filterSchemes(this.value)">
+        </div>
+        <div class="chip-row" id="scheme-cats"></div>
+        <div id="schemes-list"></div>
+        <div id="eligibility-modal" class="modal-overlay">
+          <div class="modal">
+            <div class="modal-title">Eligibility check <button class="modal-close" onclick="closeModal('eligibility-modal')">✕</button></div>
+            <div id="eligibility-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CROP PAGE -->
+      <div id="page-crop" class="screen">
+        <div class="grid-2">
+          <div class="card">
+            <div style="font-size:16px;font-weight:600;margin-bottom:20px">Enter farm details</div>
+            <div class="form-row"><label>Soil type</label>
+              <select id="soil-type">
+                <option value="">Select soil type</option>
+                <option>Clay soil</option><option>Sandy soil</option><option>Loamy soil</option><option>Black cotton soil</option><option>Red laterite soil</option>
+              </select>
+            </div>
+            <div class="form-grid">
+              <div class="form-row"><label>Land size (acres)</label><input type="number" placeholder="5" id="land-size"></div>
+              <div class="form-row"><label>Season</label>
+                <select id="season"><option>Kharif (Jun–Nov)</option><option>Rabi (Nov–Apr)</option><option>Zaid (Mar–Jun)</option></select>
+              </div>
+            </div>
+            <div class="form-row"><label>Water availability</label>
+              <select id="water-avail">
+                <option>Well irrigated (canal/borewell)</option><option>Moderate (seasonal)</option><option>Rain-fed only</option><option>Water scarce</option>
+              </select>
+            </div>
+            <div class="form-row"><label>State</label>
+              <select id="state-sel"><option>Tamil Nadu</option><option>Karnataka</option><option>Maharashtra</option><option>Punjab</option><option>Uttar Pradesh</option></select>
+            </div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="getCropRec()">Get AI recommendation</button>
+          </div>
+          <div id="crop-result-area">
+            <div class="empty-state">
+              <div>🌱</div>
+              <div style="font-size:15px;color:var(--text2)">Fill in details to get crop recommendations</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:24px">
+          <div class="section-head"><div class="section-title">Market price trends</div></div>
+          <div class="grid-3" id="price-trends"></div>
+        </div>
+      </div>
+
+      <!-- CHATBOT PAGE -->
+      <div id="page-chatbot" class="screen">
+        <div class="chat-wrap">
+          <div class="chat-messages" id="chat-msgs"></div>
+          <div class="chat-input-row">
+            <input type="text" class="chat-input" placeholder="Ask about crops, diseases, schemes, weather…" id="chat-in" onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="btn btn-primary" onclick="sendChat()">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE PAGE -->
+      <div id="page-profile" class="screen">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profile-avatar">R</div>
+          <div style="font-size:20px;font-weight:700" id="profile-name">Ravi Kumar</div>
+          <div style="font-size:14px;color:var(--text2);margin-top:4px">Medium Farmer · Thoothukudi, Tamil Nadu</div>
+          <div class="stat-row">
+            <div class="metric"><div class="metric-val">8</div><div class="metric-label">Acres</div></div>
+            <div class="metric"><div class="metric-val">12</div><div class="metric-label">Bookings</div></div>
+            <div class="metric"><div class="metric-val">7</div><div class="metric-label">Detections</div></div>
+            <div class="metric"><div class="metric-val">5</div><div class="metric-label">Posts</div></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div style="font-size:14px;font-weight:600;margin-bottom:16px">Edit profile</div>
+            <div class="form-row"><label>Full name</label><input type="text" value="Ravi Kumar" id="prof-name"></div>
+            <div class="form-row"><label>Mobile</label><input type="text" value="+91 98765 43210"></div>
+            <div class="form-row"><label>Email</label><input type="email" value="ravi@example.com"></div>
+            <div class="form-row"><label>Farm size (acres)</label><input type="number" value="8"></div>
+            <div class="form-row"><label>Primary crops</label><input type="text" value="Rice, Sugarcane, Groundnut"></div>
+            <div class="form-row"><label>Village/Town</label><input type="text" value="Thoothukudi"></div>
+            <button class="btn btn-primary btn-sm" onclick="saveProfile()">Save changes</button>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:14px">Farm expense tracker</div>
+              <div id="expense-list"></div>
+              <button class="btn btn-sm" style="margin-top:12px;width:100%;justify-content:center" onclick="openModal('expense-modal')">+ Add expense</button>
+            </div>
+            <div class="card">
+              <div style="font-size:14px;font-weight:600;margin-bottom:14px">Notifications</div>
+              <div id="notif-list"></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;justify-content:flex-end">
+          <button class="btn" onclick="doLogout()">Sign out</button>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="expense-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Add expense / income <button class="modal-close" onclick="closeModal('expense-modal')">✕</button></div>
+    <div class="form-row"><label>Type</label><select id="exp-type"><option>Expense</option><option>Income</option></select></div>
+    <div class="form-row"><label>Category</label><select id="exp-cat"><option>Seeds</option><option>Fertilizer</option><option>Labour</option><option>Equipment</option><option>Crop sale</option></select></div>
+    <div class="form-row"><label>Amount (₹)</label><input type="number" id="exp-amount" placeholder="5000"></div>
+    <div class="form-row"><label>Note</label><input type="text" id="exp-note" placeholder="Optional description"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="addExpense()">Add</button>
+  </div>
+</div>
+
+<div id="product-modal" class="modal-overlay">
+  <div class="modal" id="product-modal-content"></div>
+</div>
+
+<div id="booking-confirm-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Booking confirmed! 🎉 <button class="modal-close" onclick="closeModal('booking-confirm-modal')">✕</button></div>
+    <div id="booking-confirm-content"></div>
+  </div>
+</div>
+
+</div><!-- /main-app -->
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBSAGgTEP4kqWFVRYFIHPY8ynkfBBpLh3g",
+  authDomain: "aagroo-4d9e6.firebaseapp.com",
+  projectId: "aagroo-4d9e6",
+  storageBucket: "aagroo-4d9e6.firebasestorage.app",
+  messagingSenderId: "559774064562",
+  appId: "1:559774064562:android:9c6634e7393289b5a88eab"
+};
+
+window.firebaseApp = initializeApp(firebaseConfig);
+window.firebaseAuth = getAuth(window.firebaseApp);
+window.GoogleAuthProvider = GoogleAuthProvider;
+window.signInWithPopup = signInWithPopup;
+
+console.log("Firebase Connected Successfully");
+</script>
+
+<!-- Main App -->
+<script>
+
+// ====== STATE ======
+let state = {
+  user: null,
+  currentPage: 'dashboard',
+  selectedVehicle: null,
+  posts: [],
+  bookings: JSON.parse(localStorage.getItem('agri_bookings')||'[]'),
+  expenses: JSON.parse(localStorage.getItem('agri_expenses')||'[]'),
+  diseaseHistory: JSON.parse(localStorage.getItem('agri_disease')||'[]'),
+  cartCount: 0,
+  likedPosts: new Set(),
+  activeMarketCat: 'All',
+  activeCommunityFilter: 'All',
+  chatHistory: []
+};
+
+// ====== DATA ======
+const marketData = [
+  {name:'Basmati Rice',emoji:'🌾',price:2850,unit:'quintal',change:+3.2,cat:'Seeds',rating:4.5,desc:'Premium long-grain Basmati rice seeds, high yield variety suitable for Kharif season.'},
+  {name:'NPK Fertilizer',emoji:'🧪',price:1200,unit:'50kg bag',change:-1.5,cat:'Fertilizers',rating:4.2,desc:'Balanced NPK 17-17-17 compound fertilizer. Ideal for paddy and sugarcane.'},
+  {name:'Neem Pesticide',emoji:'🌿',price:480,unit:'litre',change:0,cat:'Pesticides',rating:4.7,desc:'Organic neem-based pesticide, safe for pollinators, effective against aphids and whitefly.'},
+  {name:'Drip Irrigation Kit',emoji:'💧',price:8500,unit:'acre set',change:+1.2,cat:'Irrigation',rating:4.8,desc:'Complete micro-drip irrigation kit for 1 acre, includes pipes, emitters, and filters.'},
+  {name:'Hybrid Cotton Seed',emoji:'🌱',price:950,unit:'packet',change:+2.1,cat:'Seeds',rating:4.4,desc:'High-yield Bt cotton seed. Suitable for black cotton soil. 120-day crop.'},
+  {name:'Cultivator Blade Set',emoji:'⚙️',price:3200,unit:'set of 9',change:-0.5,cat:'Tools',rating:4.3,desc:'Heavy-duty cultivator blades for tractor attachment. Hardened steel.'},
+  {name:'Organic Compost',emoji:'🍂',price:350,unit:'50kg bag',change:+0.8,cat:'Organic',rating:4.6,desc:'Well-decomposed organic compost with added vermicompost, rich in micronutrients.'},
+  {name:'Sprinkler System',emoji:'🚿',price:6200,unit:'acre set',change:-2.0,cat:'Irrigation',rating:4.1,desc:'Rotating sprinkler irrigation system, ideal for wheat and vegetable crops.'},
+  {name:'Groundnut Seed',emoji:'🥜',price:750,unit:'30kg bag',change:+4.0,cat:'Seeds',rating:4.5,desc:'High-oleic groundnut variety, tolerant to drought. Good for red laterite soil.'},
+  {name:'Fungicide Mancozeb',emoji:'🧴',price:680,unit:'1kg pack',change:+1.0,cat:'Pesticides',rating:4.0,desc:'Contact fungicide for blast, early blight, and downy mildew in paddy and vegetables.'},
+  {name:'Hand Sprayer',emoji:'💦',price:420,unit:'16L pump',change:0,cat:'Tools',rating:4.4,desc:'Battery-powered 16-litre backpack sprayer with adjustable nozzle.'},
+  {name:'Bio Stimulant',emoji:'🌺',price:890,unit:'500ml',change:+2.5,cat:'Organic',rating:4.9,desc:'Plant growth promoter with seaweed extract and humic acid. Improves root growth.'},
+];
+
+const vehicles = [
+  {name:'John Deere Tractor 5050D',emoji:'🚜',price:800,unit:'per day',owner:'Murugan Farm Rentals',location:'Thoothukudi',rating:4.7,available:true},
+  {name:'Harvester Combine',emoji:'🌾',price:2500,unit:'per day',owner:'Krishnan Agri Services',location:'Tiruchendur',rating:4.9,available:true},
+  {name:'Rotavator',emoji:'⚙️',price:600,unit:'per day',owner:'Senthil Equipment',location:'Thoothukudi',rating:4.5,available:false},
+  {name:'Seed Drill',emoji:'🌱',price:450,unit:'per day',owner:'Arjun Agri Tools',location:'Kovilpatti',rating:4.6,available:true},
+  {name:'Water Tanker',emoji:'💧',price:350,unit:'per trip',owner:'Raja Water Services',location:'Thoothukudi',rating:4.3,available:true},
+  {name:'Power Tiller',emoji:'🔧',price:300,unit:'per day',owner:'Senthil Equipment',location:'Thoothukudi',rating:4.4,available:true},
+];
+
+const schemes = [
+  {title:'PM-KISAN Samman Nidhi',emoji:'💰',badge:'badge-green',badgeText:'Open',desc:'Direct income support of ₹6000/year to all landholding farmer families. Paid in 3 equal instalments.',category:'Income Support',docs:['Aadhaar Card','Land records','Bank account details'],deadline:'Always open',amount:'₹6,000/year'},
+  {title:'Pradhan Mantri Fasal Bima Yojana',emoji:'🛡️',badge:'badge-blue',badgeText:'Enroll now',desc:'Crop insurance scheme providing financial support to farmers suffering crop loss due to unforeseen events like pests, diseases, and natural calamities.',category:'Insurance',docs:['Land records','Bank details','Sowing certificate'],deadline:'Before crop sowing',amount:'Upto ₹2 lakh'},
+  {title:'Kisan Credit Card',emoji:'💳',badge:'badge-teal',badgeText:'Apply',desc:'Provides adequate and timely credit to farmers for cultivation, post-harvest expenses, and allied activities. Interest subvention of 2% available.',category:'Credit',docs:['Aadhaar','Land ownership proof','Passport photo'],deadline:'Rolling',amount:'Up to ₹3 lakh at 4% interest'},
+  {title:'Soil Health Card Scheme',emoji:'🔬',badge:'badge-amber',badgeText:'Collect card',desc:'Provides soil health card to farmers with crop-wise recommendations for nutrients and fertilizers. Free soil testing.',category:'Advisory',docs:['Aadhaar','Land ownership proof'],deadline:'Rolling',amount:'Free service'},
+  {title:'PM Kusum Scheme',emoji:'☀️',badge:'badge-green',badgeText:'Apply',desc:'Support for solar pump installation for irrigation. 60% subsidy on solar powered pumps up to 7.5 HP.',category:'Subsidy',docs:['Land records','Electricity bill','Aadhaar','Bank details'],deadline:'Dec 2024',amount:'60% subsidy on pump cost'},
+  {title:'Agriculture Infrastructure Fund',emoji:'🏗️',badge:'badge-blue',badgeText:'Apply',desc:'Long-term debt financing for post-harvest management and community farming assets. Interest subvention of 3%.',category:'Infrastructure',docs:['Project report','Aadhaar','Bank details','Registration proof'],deadline:'Rolling',amount:'Up to ₹2 crore'},
+];
+
+const diseaseResults = {
+  'leaf_spot': {name:'Cercospora Leaf Spot',emoji:'🍂',confidence:92,severity:'Moderate',color:'var(--amber-600)',desc:'Fungal disease causing circular brown spots with yellow halos on leaves. Spreads in humid conditions.',causes:['Cercospora fungi','High humidity','Overcrowding','Water-stressed plants'],treatment:['Remove infected leaves','Improve air circulation','Apply copper-based fungicide','Avoid overhead irrigation'],fertilizers:['Potassium sulphate (improves resistance)','Calcium nitrate','Avoid excess nitrogen'],pesticides:['Mancozeb 75% WP — 2g/litre','Carbendazim 50% WP — 1g/litre','Copper oxychloride — 3g/litre']},
+  'bacterial_blight': {name:'Bacterial Blight (Xanthomonas)',emoji:'🦠',confidence:88,severity:'High',color:'var(--coral-600)',desc:'Water-soaked lesions that turn yellow then brown. Very destructive in rice paddies during rainy season.',causes:['Xanthomonas oryzae bacteria','Wounds/cuts in leaves','Flooding','Contaminated seeds'],treatment:['Seed treatment with Streptomycin','Drain flooded fields','Copper spray','Resistant varieties'],fertilizers:['Reduce nitrogen fertilization','Add zinc sulphate','Potash application'],pesticides:['Streptomycin + Tetracycline — 0.5g + 1g/litre','Copper hydroxide — 2g/litre']},
+  'powdery_mildew': {name:'Powdery Mildew',emoji:'🌫️',confidence:95,severity:'Moderate',color:'var(--amber-600)',desc:'White powdery fungal growth on leaf surface. Common on cucurbits, grapes, and wheat.',causes:['Erysiphales fungi','Dry weather with high humidity','Poor air circulation','Shaded conditions'],treatment:['Sulphur dusting','Potassium bicarbonate spray','Improve ventilation','Remove affected parts'],fertilizers:['Balanced NPK','Avoid excess nitrogen','Silicon foliar spray'],pesticides:['Wettable sulphur 80% WP — 3g/litre','Trifloxystrobin — 0.5ml/litre','Neem oil 1500 ppm — 3ml/litre']},
+  'rust': {name:'Stem Rust (Puccinia)',emoji:'🟠',confidence:90,severity:'High',color:'var(--coral-600)',desc:'Orange-red pustules on stems and leaves. Major disease in wheat. Can spread rapidly.',causes:['Puccinia fungi','Wind-borne spores','Cool moist weather','Susceptible varieties'],treatment:['Seed treatment','Fungicide at first sign','Resistant wheat varieties','Early sowing'],fertilizers:['Balanced NPK','Avoid late nitrogen','Boron application'],pesticides:['Propiconazole 25% EC — 0.1%','Tebuconazole — 0.1%','Mancozeb — 2.5g/litre']},
+  'healthy': {name:'Healthy Plant ✅',emoji:'🌿',confidence:97,severity:'None',color:'var(--green-600)',desc:'No disease detected. Plant appears healthy with good leaf colour and vigour.',causes:[],treatment:['Continue current practices','Regular monitoring','Maintain soil health'],fertilizers:['Continue balanced fertilization','Soil test before next application'],pesticides:['No treatment needed','Continue preventive neem spray']}
+};
+
+const crops = [
+  {name:'Rice (Paddy)',emoji:'🌾',yield:'40-60 qtl/acre',duration:'120-140 days',water:'High',soil:'Clay,Loamy',season:'Kharif,Rabi',price:'₹2,100/qtl'},
+  {name:'Groundnut',emoji:'🥜',yield:'12-18 qtl/acre',duration:'100-120 days',water:'Moderate',soil:'Sandy,Red laterite',season:'Kharif,Rabi',price:'₹5,800/qtl'},
+  {name:'Sugarcane',emoji:'🎋',yield:'300-400 qtl/acre',duration:'12 months',water:'High',soil:'Loamy,Black cotton',season:'Kharif',price:'₹280/qtl'},
+  {name:'Cotton',emoji:'🪡',yield:'8-14 qtl/acre',duration:'150-180 days',water:'Moderate',soil:'Black cotton,Loamy',season:'Kharif',price:'₹7,000/qtl'},
+  {name:'Turmeric',emoji:'🟡',yield:'25-35 qtl/acre',duration:'270-300 days',water:'Moderate',soil:'Loamy,Red laterite',season:'Kharif',price:'₹11,000/qtl'},
+  {name:'Banana',emoji:'🍌',yield:'200-280 qtl/acre',duration:'11-14 months',water:'High',soil:'Loamy,Clay',season:'Year round',price:'₹1,200/qtl'},
+];
+
+const posts = [
+  {id:1,author:'Suresh Pandi',loc:'Madurai',avatar:'SP',color:'#185FA5',cat:'Crop Advice',text:'Just harvested my paddy using SRI method — got 52 quintals per acre! Key was transplanting at 12 days and using organic compost. Anyone else tried SRI in Tamil Nadu?',likes:47,comments:12,time:'2h ago'},
+  {id:2,author:'Kavitha Mani',loc:'Coimbatore',avatar:'KM',color:'#3B6D11',cat:'Disease Discussion',text:'My tomato plants have yellow spots on leaves spreading fast. Uploaded pics to AgriConnect — identified as Early Blight. Now using Mancozeb spray every 10 days. Getting better! 🍅',likes:31,comments:8,time:'5h ago'},
+  {id:3,author:'Ramesh Gounder',loc:'Erode',avatar:'RG',color:'#854F0B',cat:'Government Schemes',text:'PM-KISAN ₹2,000 credited to my account today! If you haven\'t registered, do it at pmkisan.gov.in. Very simple process, just need Aadhaar and land records.',likes:89,comments:24,time:'8h ago'},
+  {id:4,author:'Lakshmi Devi',loc:'Salem',avatar:'LD',color:'#534AB7',cat:'Organic Farming',text:'Year 3 of fully organic farming. Soil quality has improved dramatically. Switched from chemical fertilizers to vermicompost + neem cake. Input cost down 40%, yield same!',likes:112,comments:33,time:'1d ago'},
+  {id:5,author:'Muthusamy K',loc:'Tirunelveli',avatar:'MK',color:'#0F6E56',cat:'Equipment',text:'Booked a harvester through AgriConnect vehicle module — saved ₹3,000 compared to local rates. Quality was excellent. Highly recommend using the platform for equipment booking!',likes:56,comments:15,time:'1d ago'},
+];
+
+const farmers = [
+  {name:'Lakshmi Devi',loc:'Salem',followers:1240,emoji:'👩‍🌾',color:'#534AB7'},
+  {name:'Ramesh Gounder',loc:'Erode',followers:876,emoji:'👨‍🌾',color:'#854F0B'},
+  {name:'Suresh Pandi',loc:'Madurai',followers:654,emoji:'🧑‍🌾',color:'#185FA5'},
+];
+
+const forecast = [
+  {day:'Mon',emoji:'☀️',high:34,low:26,rain:0},
+  {day:'Tue',emoji:'⛅',high:32,low:25,rain:10},
+  {day:'Wed',emoji:'🌧️',high:28,low:24,rain:70},
+  {day:'Thu',emoji:'🌧️',high:27,low:23,rain:80},
+  {day:'Fri',emoji:'⛅',high:30,low:24,rain:20},
+  {day:'Sat',emoji:'☀️',high:33,low:25,rain:5},
+  {day:'Sun',emoji:'☀️',high:35,low:26,rain:0},
+];
+
+const priceTrends = [
+  {name:'Rice',emoji:'🌾',price:2850,change:+3.2,color:'var(--green-600)'},
+  {name:'Cotton',emoji:'🪡',price:6800,change:-2.1,color:'var(--coral-600)'},
+  {name:'Groundnut',emoji:'🥜',price:5750,change:+4.8,color:'var(--amber-600)'},
+  {name:'Turmeric',emoji:'🟡',price:10500,change:+7.2,color:'var(--teal-600)'},
+  {name:'Sugarcane',emoji:'🎋',price:285,change:+0.5,color:'var(--blue-600)'},
+  {name:'Banana',emoji:'🍌',price:1150,change:-1.8,color:'var(--purple-600)'},
+];
+
+// ====== AUTH ======
+function switchAuthTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('login-form').style.display = tab==='login'?'block':'none';
+  document.getElementById('register-form').style.display = tab==='register'?'block':'none';
+}
+
+window.doLogin = function() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+
+  if (!email) {
+    showToast('Please enter your email or mobile');
+    return;
+  }
+
+  if (!pass) {
+    showToast('Please enter your password');
+    return;
+  }
+
+  const name = email.includes('@') ? email.split('@')[0] : 'Farmer';
+  const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+
+  loginUser({
+    name: displayName,
+    email,
+    phone: ''
+  });
+};
+
+function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  if (!name) { showToast('Please enter your full name'); return; }
+  loginUser({name, email: '', phone: document.getElementById('reg-phone').value});
+}
+
+window.googleLogin = async function() {
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(firebaseAuth, provider);
+
+    loginUser({
+      name: result.user.displayName,
+      email: result.user.email,
+      phone: result.user.phoneNumber || ''
+    });
+
+    showToast('Google Login Successful');
+  } catch (error) {
+    console.error(error);
+    showToast('Google Login Failed');
+  }
+}
+  
+function loginUser(user) {
+  state.user = user;
+  localStorage.setItem('agri_user', JSON.stringify(user));
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'flex';
+  const initial = user.name.charAt(0).toUpperCase();
+  document.getElementById('user-avatar').textContent = initial;
+  document.getElementById('profile-avatar').textContent = initial;
+  document.getElementById('profile-name').textContent = user.name;
+  if (document.getElementById('prof-name')) document.getElementById('prof-name').value = user.name;
+  const hr = new Date().getHours();
+  const greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('welcome-msg').textContent = `${greeting}, ${user.name.split(' ')[0]}! 👋`;
+  showToast(`Welcome back, ${user.name.split(' ')[0]}!`);
+  initApp();
+}
+
+function doLogout() {
+  localStorage.removeItem('agri_user');
+  state.user = null;
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
+function showForgot() { showToast('Password reset link sent to your email'); }
+
+// ====== NAVIGATION ======
+function showPage(page, btn) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+page+"'")) b.classList.add('active');
+    });
+  }
+  const titles = {dashboard:'Dashboard',disease:'Disease Detection',weather:'Weather Forecast',market:'Marketplace',vehicle:'Vehicle Booking',community:'Community',schemes:'Government Schemes',crop:'Crop Advisor',chatbot:'AI Farming Assistant',profile:'My Profile'};
+  document.getElementById('topbar-title').textContent = titles[page] || page;
+  state.currentPage = page;
+}
+
+// ====== INIT ======
+function initApp() {
+  renderMarketPrices();
+  renderNewsFeed();
+  renderWeather();
+  renderMarketplace();
+  renderVehicles();
+  renderCommunity();
+  renderSchemes();
+  renderPriceTrends();
+  renderExpenses();
+  renderNotifications();
+  renderDiseaseHistory();
+  renderBookingHistory();
+  initChat();
+  // Set today's date as default
+  const today = new Date().toISOString().split('T')[0];
+  if (document.getElementById('book-date')) document.getElementById('book-date').value = today;
+}
+
+// ====== DASHBOARD ======
+function renderMarketPrices() {
+  const pricesHtml = priceTrends.map(p => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:22px">${p.emoji}</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">${p.name}</div>
+        <div style="font-size:11px;color:var(--text3)">per quintal</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:14px;font-weight:600">₹${p.price.toLocaleString()}</div>
+        <div style="font-size:11px;color:${p.change>=0?'#5db535':'#e24b4a'}">${p.change>=0?'▲':'▼'} ${Math.abs(p.change)}%</div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('market-prices').innerHTML = pricesHtml;
+}
+
+function renderNewsFeed() {
+  const news = [
+    {emoji:'📰',title:'Tamil Nadu announces 25% subsidy on drip irrigation equipment',meta:'Ministry of Agriculture · 2h ago'},
+    {emoji:'🌧️',title:'Southwest monsoon expected to hit Tamil Nadu coast this week',meta:'IMD Weather · 4h ago'},
+    {emoji:'💹',title:'Cotton prices surge 7% on export demand — farmers benefit',meta:'AgriWatch · 6h ago'},
+    {emoji:'🔬',title:'New high-yield paddy variety MDU 6 released for Kharif 2024',meta:'TNAU Research · 1d ago'},
+  ];
+  document.getElementById('news-feed').innerHTML = news.map(n=>`
+    <div class="news-item">
+      <div class="news-emoji">${n.emoji}</div>
+      <div>
+        <div class="news-title">${n.title}</div>
+        <div class="news-meta">${n.meta}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ====== WEATHER ======
+async function loadRealTimeWeather() {
+  if (!navigator.geolocation) {
+    showToast("Location not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (position) => {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    try {
+      // Get weather
+      const weatherRes = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto`
+      );
+
+      const weather = await weatherRes.json();
+
+      // Get location name
+      const locationRes = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+      );
+
+      const locationData = await locationRes.json();
+
+     window.weatherData = {
+  weather,
+  location:
+    locationData.address.city ||
+    locationData.address.town ||
+    locationData.address.village ||
+    locationData.address.county ||
+    locationData.address.state ||
+    "Unknown Location"
+};
+
+      renderWeather();
+    } catch (err) {
+      console.error(err);
+      showToast("Unable to load weather");
+    }
+  });
+}
+function renderWeather() {
+  if (!window.weatherData) return;
+
+  const current = window.weatherData.weather.current;
+  const daily = window.weatherData.weather.daily;
+  const location = window.weatherData.location;
+
+   const topBar = document.getElementById("topbar-weather");
+
+  if (topBar) {
+    topBar.innerHTML = `☀️ ${Math.round(current.temperature_2m)}°C · ${location}`;
+  }
+  document.getElementById('weather-main').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-size:13px;opacity:.7;margin-bottom:8px">
+          📍 ${location}
+        </div>
+
+        <div class="weather-temp">
+          ${Math.round(current.temperature_2m)}°C
+        </div>
+
+        <div class="weather-cond">
+          Feels like ${Math.round(current.apparent_temperature)}°C
+        </div>
+      </div>
+
+      <div style="font-size:64px">☀️</div>
+    </div>
+
+    <div class="weather-row" style="margin-top:20px">
+      <div class="weather-stat">
+        <div class="weather-stat-val">
+          ${current.relative_humidity_2m}%
+        </div>
+        <div class="weather-stat-label">
+          💧 Humidity
+        </div>
+      </div>
+
+      <div class="weather-stat">
+        <div class="weather-stat-val">
+          ${Math.round(current.wind_speed_10m)} km/h
+        </div>
+        <div class="weather-stat-label">
+          🌬 Wind
+        </div>
+      </div>
+
+      <div class="weather-stat">
+        <div class="weather-stat-val">
+          ${daily.precipitation_probability_max[0]}%
+        </div>
+        <div class="weather-stat-label">
+          🌧 Rain Chance
+        </div>
+      </div>
+
+      <div class="weather-stat">
+        <div class="weather-stat-val">
+          ${Math.round(current.temperature_2m)}
+        </div>
+        <div class="weather-stat-label">
+          🌡 Temp
+        </div>
+      </div>
+    </div>
+  `;
+
+  let forecastHTML = "";
+
+  for (let i = 0; i < 5; i++) {
+    const day = new Date(daily.time[i]);
+
+    forecastHTML += `
+      <div class="forecast-day">
+        <div style="font-size:11px;color:white">
+          ${day.toLocaleDateString('en-US',{weekday:'short'})}
+        </div>
+
+        <div class="forecast-emoji">🌤️</div>
+
+        <div style="font-size:13px;font-weight:600;color:white">
+          ${Math.round(daily.temperature_2m_max[i])}°
+        </div>
+
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">
+          ${Math.round(daily.temperature_2m_min[i])}°
+        </div>
+
+        <div style="font-size:10px;color:#85B7EB">
+          ${daily.precipitation_probability_max[i]}%
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('forecast-grid').innerHTML = forecastHTML;
+}
+
+// ====== MARKETPLACE ======
+let allCats = ['All', ...new Set(marketData.map(p=>p.cat))];
+function renderMarketplace() {
+  document.getElementById('market-cats').innerHTML = allCats.map(c=>`
+    <div class="chip ${c===state.activeMarketCat?'active':''}" onclick="filterCat('${c}')">${c}</div>
+  `).join('');
+  filterCat(state.activeMarketCat, false);
+}
+
+function filterCat(cat, render=true) {
+  state.activeMarketCat = cat;
+  if (render) renderMarketplace();
+  const filtered = cat==='All' ? marketData : marketData.filter(p=>p.cat===cat);
+  renderProducts(filtered);
+}
+
+function filterProducts(query) {
+  const q = query.toLowerCase();
+  const filtered = marketData.filter(p=>p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q));
+  renderProducts(filtered);
+}
+
+function renderProducts(items) {
+  document.getElementById('product-grid').innerHTML = items.map(p=>`
+    <div class="product-card" onclick="openProduct('${p.name}')">
+      <div class="product-img">${p.emoji}</div>
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">${p.cat}</div>
+        <div class="star-row">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}<span style="color:var(--text3);margin-left:4px">${p.rating}</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+          <div>
+            <div class="product-price">₹${p.price.toLocaleString()}</div>
+            <div style="font-size:11px;color:var(--text3)">per ${p.unit}</div>
+          </div>
+          <div style="font-size:11px;color:${p.change>=0?'#5db535':'#e24b4a'}">${p.change>=0?'▲':'▼'}${Math.abs(p.change)}%</div>
+        </div>
+      </div>
+    </div>
+  `).join('') || '<div class="empty-state" style="grid-column:1/-1"><div>🔍</div><div>No products found</div></div>';
+}
+
+function openProduct(name) {
+  const p = marketData.find(x=>x.name===name);
+  if (!p) return;
+  document.getElementById('product-modal-content').innerHTML = `
+    <div class="modal-title">${p.name} <button class="modal-close" onclick="closeModal('product-modal')">✕</button></div>
+    <div style="font-size:64px;text-align:center;padding:24px 0;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:20px">${p.emoji}</div>
+    <p style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px">${p.desc}</p>
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card-sm"><div style="font-size:11px;color:var(--text3)">Price</div><div style="font-size:20px;font-weight:700;color:var(--accent2)">₹${p.price.toLocaleString()}</div><div style="font-size:11px;color:var(--text3)">per ${p.unit}</div></div>
+      <div class="card-sm"><div style="font-size:11px;color:var(--text3)">Rating</div><div style="font-size:20px;font-weight:700;color:var(--accent2)">${p.rating} ⭐</div><div style="font-size:11px;color:var(--text3)">Customer rating</div></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="addToCart('${p.name}')">🛒 Add to cart</button>
+      <button class="btn" onclick="showToast('Added to wishlist ♥')">♡ Wishlist</button>
+    </div>
+  `;
+  openModal('product-modal');
+}
+
+function addToCart(name) {
+  state.cartCount++;
+  closeModal('product-modal');
+  showToast(`${name} added to cart (${state.cartCount} items)`);
+}
+
+// ====== DISEASE DETECTION ======
+function triggerUpload() { document.getElementById('img-input').click(); }
+
+function analyzeDisease(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('preview-img').src = e.target.result;
+    document.getElementById('img-preview').style.display = 'block';
+    document.getElementById('disease-placeholder').style.display = 'none';
+    document.getElementById('disease-result').style.display = 'block';
+    document.getElementById('analyzing-state').style.display = 'block';
+    document.getElementById('result-content').style.display = 'none';
+    const keys = Object.keys(diseaseResults);
+    const randomKey = keys[Math.floor(Math.random()*keys.length)];
+    setTimeout(() => showDiseaseResult(diseaseResults[randomKey]), 2500);
+  };
+  reader.readAsDataURL(file);
+}
+
+function useSampleImage() {
+  document.getElementById('disease-placeholder').style.display = 'none';
+  document.getElementById('disease-result').style.display = 'block';
+  document.getElementById('analyzing-state').style.display = 'block';
+  document.getElementById('result-content').style.display = 'none';
+  document.getElementById('img-preview').innerHTML = '<div style="font-size:80px;text-align:center;padding:24px;background:var(--surface2);border-radius:var(--radius)">🍃</div>';
+  document.getElementById('img-preview').style.display = 'block';
+  const sample = diseaseResults['leaf_spot'];
+  setTimeout(()=> showDiseaseResult(sample), 2500);
+}
+
+function showDiseaseResult(r) {
+  document.getElementById('analyzing-state').style.display = 'none';
+  document.getElementById('result-content').style.display = 'block';
+  const causesList = r.causes.length ? r.causes.map(c=>`<li style="font-size:13px;color:var(--text2);padding:2px 0">${c}</li>`).join('') : '<li style="font-size:13px;color:var(--accent)">No issues detected</li>';
+  const treatList = r.treatment.map(t=>`<div class="treatment-item"><span style="color:var(--accent)">✓</span><span style="font-size:13px;color:var(--text2)">${t}</span></div>`).join('');
+  const tags = (items, color) => items.map(i=>`<span class="badge" style="background:var(--surface3);color:var(--text2)">${i}</span>`).join('');
+
+  document.getElementById('result-content').innerHTML = `
+    <div style="padding:16px;background:var(--surface3);border-radius:var(--radius-sm);margin-bottom:16px;border-left:3px solid ${r.color}">
+      <div style="font-size:20px;margin-bottom:6px">${r.emoji}</div>
+      <div class="disease-name">${r.name}</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+        <span class="badge ${r.severity==='None'?'badge-green':r.severity==='Moderate'?'badge-amber':'badge-red'}">${r.severity} severity</span>
+        <span style="font-size:12px;color:var(--text3)">Confidence: ${r.confidence}%</span>
+      </div>
+      <div class="conf-bar"><div class="conf-fill" style="width:${r.confidence}%"></div></div>
+      <p style="font-size:13px;color:var(--text2);margin-top:10px;line-height:1.6">${r.desc}</p>
+    </div>
+    ${r.causes.length ? `<div style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">Causes</div><ul style="padding-left:16px">${causesList}</ul></div>` : ''}
+    <div style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">Treatment steps</div>${treatList}</div>
+    <div style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">Recommended pesticides</div><div style="display:flex;flex-wrap:wrap;gap:6px">${tags(r.pesticides)}</div></div>
+    <div><div style="font-size:13px;font-weight:600;margin-bottom:8px">Fertilizer advice</div><div style="display:flex;flex-wrap:wrap;gap:6px">${tags(r.fertilizers)}</div></div>
+  `;
+
+  // Save to history
+  const entry = {name:r.name, emoji:r.emoji, conf:r.confidence, severity:r.severity, date:new Date().toLocaleDateString('en-IN')};
+  state.diseaseHistory.unshift(entry);
+  localStorage.setItem('agri_disease', JSON.stringify(state.diseaseHistory.slice(0,10)));
+  renderDiseaseHistory();
+}
+
+function renderDiseaseHistory() {
+  const h = state.diseaseHistory;
+  document.getElementById('disease-history').innerHTML = h.length ? h.slice(0,5).map(e=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px">
+      <span style="font-size:28px">${e.emoji}</span>
+      <div style="flex:1"><div style="font-size:14px;font-weight:500">${e.name}</div><div style="font-size:12px;color:var(--text3)">${e.date}</div></div>
+      <span class="badge ${e.severity==='None'?'badge-green':e.severity==='Moderate'?'badge-amber':'badge-red'}">${e.severity}</span>
+      <span style="font-size:12px;color:var(--text3)">${e.conf}%</span>
+    </div>
+  `).join('') : '<div style="color:var(--text3);font-size:13px;text-align:center;padding:24px">No detections yet</div>';
+}
+
+// ====== VEHICLES ======
+function renderVehicles() {
+  document.getElementById('vehicle-list').innerHTML = vehicles.map((v,i)=>`
+    <div class="vehicle-card" style="margin-bottom:10px;${!v.available?'opacity:.6':''}" onclick="${v.available?`selectVehicle(${i})`:''}">
+      <div class="vehicle-icon">${v.emoji}</div>
+      <div class="vehicle-info">
+        <div class="vehicle-name">${v.name}</div>
+        <div class="vehicle-price">₹${v.price.toLocaleString()}/${v.unit.replace('per ','')}</div>
+        <div class="vehicle-meta">👤 ${v.owner} · 📍 ${v.location}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <span class="star-row" style="font-size:12px">⭐ ${v.rating}</span>
+          <span class="badge ${v.available?'badge-green':'badge-red'}">${v.available?'Available':'Booked'}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectVehicle(i) {
+  state.selectedVehicle = vehicles[i];
+  const v = vehicles[i];
+  document.getElementById('selected-vehicle-info').innerHTML = `
+    <div style="display:flex;gap:12px;align-items:center">
+      <span style="font-size:40px">${v.emoji}</span>
+      <div>
+        <div style="font-size:15px;font-weight:600">${v.name}</div>
+        <div style="font-size:13px;color:var(--text2)">₹${v.price.toLocaleString()} / ${v.unit.replace('per ','')}</div>
+        <div style="font-size:12px;color:var(--text3)">${v.owner}</div>
+      </div>
+    </div>
+  `;
+  updatePrice();
+  document.getElementById('price-summary').style.display = 'block';
+}
+
+function updatePrice() {
+  if (!state.selectedVehicle) return;
+  const dur = document.getElementById('book-dur').value;
+  const hrs = dur.includes('Full') ? 10 : parseInt(dur);
+  const daily = state.selectedVehicle.price;
+  const total = state.selectedVehicle.unit.includes('trip') ? daily : Math.round(daily * hrs / 10);
+  document.getElementById('price-display').textContent = `₹${total.toLocaleString()}`;
+}
+
+function confirmBooking() {
+  if (!state.selectedVehicle) { showToast('Please select a vehicle first'); return; }
+  const date = document.getElementById('book-date').value;
+  if (!date) { showToast('Please select a booking date'); return; }
+  const v = state.selectedVehicle;
+  const dur = document.getElementById('book-dur').value;
+  const booking = {id:'BK'+Date.now(), vehicle:v.name, emoji:v.emoji, date, duration:dur, price:document.getElementById('price-display').textContent, status:'Confirmed', bookedAt:new Date().toLocaleDateString('en-IN')};
+  state.bookings.unshift(booking);
+  localStorage.setItem('agri_bookings', JSON.stringify(state.bookings));
+  renderBookingHistory();
+
+  document.getElementById('booking-confirm-content').innerHTML = `
+    <div style="text-align:center;padding:16px 0">
+      <div style="font-size:56px;margin-bottom:12px">${v.emoji}</div>
+      <div style="font-size:16px;font-weight:600;margin-bottom:4px">${v.name}</div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:16px">${v.owner}</div>
+      <div class="grid-2" style="gap:10px;text-align:left">
+        <div class="card-sm"><div style="font-size:11px;color:var(--text3)">Booking ID</div><div style="font-size:13px;font-weight:500">${booking.id}</div></div>
+        <div class="card-sm"><div style="font-size:11px;color:var(--text3)">Date</div><div style="font-size:13px;font-weight:500">${date}</div></div>
+        <div class="card-sm"><div style="font-size:11px;color:var(--text3)">Duration</div><div style="font-size:13px;font-weight:500">${dur} hrs</div></div>
+        <div class="card-sm"><div style="font-size:11px;color:var(--text3)">Amount</div><div style="font-size:13px;font-weight:500;color:var(--accent2)">${booking.price}</div></div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:var(--green-50);border-radius:var(--radius-sm)">
+        <div style="font-size:13px;color:var(--green-700)">✅ Payment successful via UPI · Confirmation SMS sent</div>
+      </div>
+    </div>
+  `;
+  openModal('booking-confirm-modal');
+}
+
+function renderBookingHistory() {
+  document.getElementById('booking-history').innerHTML = state.bookings.length ? state.bookings.slice(0,5).map(b=>`
+    <div style="display:flex;gap:12px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;align-items:center">
+      <span style="font-size:28px">${b.emoji}</span>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500">${b.vehicle}</div><div style="font-size:11px;color:var(--text3)">${b.date}</div></div>
+      <div style="text-align:right"><div style="font-size:13px;font-weight:600;color:var(--accent2)">${b.price}</div><span class="badge badge-green" style="font-size:10px">${b.status}</span></div>
+    </div>
+  `).join('') : '<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px">No bookings yet</div>';
+}
+
+// ====== COMMUNITY ======
+function renderCommunity() {
+  const cats = ['All','Crop Advice','Disease Discussion','Government Schemes','Organic Farming','Equipment'];
+  document.getElementById('community-cats').innerHTML = cats.map(c=>`
+    <div class="chip ${c===state.activeCommunityFilter?'active':''}" onclick="filterCommunity('${c}')">${c}</div>
+  `).join('');
+  renderPosts();
+  document.getElementById('popular-farmers').innerHTML = farmers.map(f=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="width:36px;height:36px;border-radius:50%;background:${f.color};display:flex;align-items:center;justify-content:center;font-size:16px">${f.emoji}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500">${f.name}</div><div style="font-size:11px;color:var(--text3)">${f.loc} · ${f.followers.toLocaleString()} followers</div></div>
+      <button class="btn btn-sm" style="font-size:11px;padding:5px 10px" onclick="showToast('Following ${f.name}')">Follow</button>
+    </div>
+  `).join('');
+}
+
+function filterCommunity(cat) {
+  state.activeCommunityFilter = cat;
+  renderCommunity();
+}
+
+function renderPosts() {
+  const filtered = state.activeCommunityFilter==='All' ? posts : posts.filter(p=>p.cat===state.activeCommunityFilter);
+  document.getElementById('posts-feed').innerHTML = filtered.map(p=>`
+    <div class="post-card">
+      <div class="post-header">
+        <div class="post-avatar" style="background:${p.color};color:#fff">${p.avatar}</div>
+        <div>
+          <div style="font-size:14px;font-weight:600">${p.author}</div>
+          <div style="font-size:12px;color:var(--text3)">📍 ${p.loc} · ${p.time}</div>
+        </div>
+        <span class="badge badge-teal" style="margin-left:auto">${p.cat}</span>
+      </div>
+      <div class="post-body">${p.text}</div>
+      <div class="post-actions">
+        <button class="post-action ${state.likedPosts.has(p.id)?'liked':''}" onclick="likePost(${p.id},this)">
+          ${state.likedPosts.has(p.id)?'❤️':'🤍'} ${p.likes + (state.likedPosts.has(p.id)?1:0)}
+        </button>
+        <button class="post-action" onclick="showToast('Comments coming soon')">💬 ${p.comments}</button>
+        <button class="post-action" onclick="showToast('Shared!')">↗ Share</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function likePost(id, btn) {
+  if (state.likedPosts.has(id)) state.likedPosts.delete(id);
+  else state.likedPosts.add(id);
+  renderPosts();
+}
+
+function createPost() {
+  const text = document.getElementById('post-input').value.trim();
+  if (!text) { showToast('Write something first'); return; }
+  posts.unshift({id:Date.now(),author:state.user?.name||'You',loc:'Thoothukudi',avatar:(state.user?.name||'Y').charAt(0).toUpperCase(),color:'var(--accent)',cat:'Crop Advice',text,likes:0,comments:0,time:'Just now'});
+  document.getElementById('post-input').value = '';
+  renderPosts();
+  showToast('Post shared with farmers!');
+}
+
+// ====== SCHEMES ======
+function renderSchemes() {
+  const cats = ['All','Income Support','Insurance','Credit','Advisory','Subsidy','Infrastructure'];
+  document.getElementById('scheme-cats').innerHTML = cats.map(c=>`
+    <div class="chip" onclick="filterSchemes2('${c}')">${c}</div>
+  `).join('');
+  renderSchemeList(schemes);
+}
+
+function filterSchemes(query) {
+  const q = query.toLowerCase();
+  renderSchemeList(schemes.filter(s=>s.title.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q)));
+}
+
+function filterSchemes2(cat) {
+  renderSchemeList(cat==='All' ? schemes : schemes.filter(s=>s.category===cat));
+}
+
+function renderSchemeList(list) {
+  document.getElementById('schemes-list').innerHTML = list.map(s=>`
+    <div class="scheme-card">
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px">
+        <span style="font-size:28px">${s.emoji}</span>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <div class="scheme-title">${s.title}</div>
+            <span class="badge ${s.badge}">${s.badgeText}</span>
+          </div>
+          <div class="scheme-desc">${s.desc}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        <span style="font-size:12px;color:var(--text3)">📄 Documents: ${s.docs.join(', ')}</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="badge badge-green">${s.amount}</span>
+        <span style="font-size:12px;color:var(--text3)">Deadline: ${s.deadline}</span>
+        <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="checkEligibility('${s.title}')">Check eligibility</button>
+        <button class="btn btn-sm" onclick="showToast('${s.title} saved!')">🔖 Save</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function checkEligibility(title) {
+  document.getElementById('eligibility-content').innerHTML = `
+    <div style="font-size:15px;font-weight:600;margin-bottom:16px">${title}</div>
+    <div style="margin-bottom:16px">
+      ${[
+        {q:'Do you own or lease agricultural land?',a:true},
+        {q:'Is your annual income below ₹2 lakh?',a:true},
+        {q:'Do you have a valid Aadhaar-linked bank account?',a:true},
+        {q:'Are you registered in the state farmer database?',a:false},
+      ].map(e=>`
+        <div style="display:flex;gap:10px;align-items:center;padding:10px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:8px">
+          <span>${e.a?'✅':'❓'}</span>
+          <span style="font-size:13px;color:var(--text2)">${e.q}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div style="background:var(--green-50);padding:14px;border-radius:var(--radius-sm);margin-bottom:16px">
+      <div style="font-size:13px;font-weight:600;color:var(--green-600)">✅ You are likely eligible!</div>
+      <div style="font-size:12px;color:var(--green-700);margin-top:4px">Register in the state farmer database to complete your eligibility. Visit your nearest agriculture office or register at agri.tn.gov.in</div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="showToast('Opening application portal…');closeModal('eligibility-modal')">Start application →</button>
+  `;
+  openModal('eligibility-modal');
+}
+
+// ====== CROP RECOMMENDER ======
+function renderPriceTrends() {
+  document.getElementById('price-trends').innerHTML = priceTrends.map(p=>`
+    <div class="card-sm">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:24px">${p.emoji}</span>
+        <div style="font-size:14px;font-weight:600">${p.name}</div>
+      </div>
+      <div style="font-size:20px;font-weight:700;color:var(--accent2)">₹${p.price.toLocaleString()}</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px">per quintal</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100,(p.price/150))}%;background:${p.color}"></div></div>
+      <div style="margin-top:6px;font-size:12px;color:${p.change>=0?'#5db535':'#e24b4a'}">${p.change>=0?'▲':'▼'} ${Math.abs(p.change)}% this week</div>
+    </div>
+  `).join('');
+}
+
+function getCropRec() {
+  const soil = document.getElementById('soil-type').value;
+  const size = document.getElementById('land-size').value || '5';
+  const season = document.getElementById('season').value;
+  const water = document.getElementById('water-avail').value;
+  if (!soil) { showToast('Please select soil type'); return; }
+
+  const area = document.getElementById('crop-result-area');
+  area.innerHTML = '<div style="text-align:center;padding:48px"><div class="loading-ring" style="width:48px;height:48px;border-width:4px"></div><div style="margin-top:16px;color:var(--text2)">AI analyzing your farm…</div></div>';
+
+  setTimeout(() => {
+    const suitable = crops.filter(c=>{
+      if (season.includes('Kharif') && !c.season.includes('Kharif') && !c.season.includes('Year')) return false;
+      if (water.includes('scarce') && c.water==='High') return false;
+      return true;
+    }).slice(0,3);
+
+    area.innerHTML = `
+      <div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:4px">AI Recommendations</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:16px">${soil} · ${size} acres · ${season.split(' ')[0]} · ${water.split(' ')[0]}</div>
+        ${suitable.map((c,i)=>`
+          <div class="crop-result" style="margin-bottom:12px;border-color:${i===0?'var(--accent)':'var(--border)'}">
+            ${i===0?'<span class="badge badge-green" style="margin-bottom:8px">⭐ Top pick</span>':''}
+            <div class="crop-name">${c.emoji} ${c.name}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+              <div><div style="font-size:11px;color:var(--text3)">Expected yield</div><div style="font-size:13px;font-weight:500">${c.yield}</div></div>
+              <div><div style="font-size:11px;color:var(--text3)">Duration</div><div style="font-size:13px;font-weight:500">${c.duration}</div></div>
+              <div><div style="font-size:11px;color:var(--text3)">Market price</div><div style="font-size:13px;font-weight:500;color:var(--accent2)">${c.price}</div></div>
+              <div><div style="font-size:11px;color:var(--text3)">Water need</div><div style="font-size:13px;font-weight:500">${c.water}</div></div>
+            </div>
+            ${i===0?`<div style="margin-top:12px;padding:10px;background:var(--surface3);border-radius:var(--radius-sm)">
+              <div style="font-size:12px;font-weight:600;margin-bottom:4px">Fertilizer plan</div>
+              <div style="font-size:12px;color:var(--text2)">Basal: DAP 50kg + MOP 25kg/acre<br>Top dress: Urea 30kg at 30 & 60 days</div>
+            </div>`:''}
+          </div>
+        `).join('')}
+        <button class="btn btn-sm" style="margin-top:8px" onclick="showToast('Detailed report downloading…')">📄 Download full report</button>
+      </div>
+    `;
+  }, 2000);
+}
+
+// ====== CHATBOT ======
+const botResponses = {
+  rice: "For paddy cultivation in Tamil Nadu: Best varieties are ADT 43, ADT 45 for short duration and CR 1009 for export quality. Use SRI method for 15-20% higher yield. Water requirement: 1200-1500mm. Apply DAP 50kg + MOP 25kg as basal dose. Current MSP: ₹2,183/quintal.",
+  disease: "Common plant diseases I can help with: Blast (paddy), Leaf spot, Bacterial blight, Powdery mildew, and Rust. Use the Disease Detection feature for instant AI diagnosis of your crop. Upload a clear photo of the affected leaf for best results.",
+  weather: "Today in Thoothukudi: 32°C, partly cloudy, 78% humidity. Heavy rain expected Wednesday-Thursday. Avoid spraying pesticides before rain. Good time to irrigate groundnut crops this week.",
+  scheme: "Key schemes available now: PM-KISAN (₹6000/year), Fasal Bima (crop insurance), Kisan Credit Card (4% interest loan up to ₹3L), PM Kusum (60% solar pump subsidy). Check the Schemes section for detailed eligibility.",
+  pest: "For integrated pest management: Use yellow sticky traps for whitefly, pheromone traps for stem borers. Spray neem oil 3ml/litre as preventive. Avoid chemical sprays during flowering. Consult the Disease Detection feature for specific pest identification.",
+  fertilizer: "General fertilizer recommendation for paddy (1 acre): Basal - DAP 50kg + MOP 25kg. First top dress (21 days) - Urea 30kg. Second top dress (45 days) - Urea 20kg. For organic: Vermicompost 500kg + neem cake 50kg + bio-fertilizer inoculants.",
+  price: "Today's market prices: Rice ₹2,850/qtl (▲3.2%), Cotton ₹6,800/qtl (▼2.1%), Groundnut ₹5,750/qtl (▲4.8%), Turmeric ₹10,500/qtl (▲7.2%), Sugarcane ₹285/qtl (▲0.5%). Best to sell turmeric now — prices at 6-month high.",
+  default: "I can help you with crop advice, disease management, fertilizer recommendations, government schemes, market prices, and weather information. What would you like to know about your farm today?"
+};
+
+function initChat() {
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML = `
+    <div class="chat-msg bot">
+      <div style="font-size:16px;margin-bottom:4px">🌿 AgriBot</div>
+      Namaste! I'm your AI farming assistant. I can help with crop advice, disease management, market prices, government schemes, and more. Ask me anything in English or Tamil!
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+      ${['Rice cultivation tips','Disease management','Today\'s prices','Govt schemes'].map(t=>`<button class="btn btn-sm" onclick="quickChat('${t}')">${t}</button>`).join('')}
+    </div>
+  `;
+}
+
+function quickChat(text) {
+  document.getElementById('chat-in').value = text;
+  sendChat();
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-in');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML += `<div class="chat-msg user">${text}</div>`;
+  msgs.innerHTML += `<div class="chat-msg bot" id="typing-msg"><span class="loading-ring" style="width:16px;height:16px;border-width:2px;vertical-align:middle"></span> Thinking…</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  setTimeout(() => {
+    const lower = text.toLowerCase();
+    let resp = botResponses.default;
+    if (lower.includes('rice') || lower.includes('paddy')) resp = botResponses.rice;
+    else if (lower.includes('disease') || lower.includes('spot') || lower.includes('blight')) resp = botResponses.disease;
+    else if (lower.includes('weather') || lower.includes('rain')) resp = botResponses.weather;
+    else if (lower.includes('scheme') || lower.includes('subsidy') || lower.includes('kisan')) resp = botResponses.scheme;
+    else if (lower.includes('pest') || lower.includes('insect') || lower.includes('bug')) resp = botResponses.pest;
+    else if (lower.includes('fertilizer') || lower.includes('urea') || lower.includes('npk')) resp = botResponses.fertilizer;
+    else if (lower.includes('price') || lower.includes('market') || lower.includes('rate')) resp = botResponses.price;
+
+    document.getElementById('typing-msg').remove();
+    msgs.innerHTML += `<div class="chat-msg bot"><div style="font-size:12px;color:var(--text3);margin-bottom:4px">🌿 AgriBot</div>${resp}</div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 1200);
+}
+
+// ====== PROFILE ======
+function saveProfile() {
+  const name = document.getElementById('prof-name').value;
+  if (state.user) state.user.name = name;
+  document.getElementById('profile-name').textContent = name;
+  document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('profile-avatar').textContent = name.charAt(0).toUpperCase();
+  showToast('Profile saved!');
+}
+
+function addExpense() {
+  const type = document.getElementById('exp-type').value;
+  const cat = document.getElementById('exp-cat').value;
+  const amount = document.getElementById('exp-amount').value;
+  const note = document.getElementById('exp-note').value;
+  if (!amount) { showToast('Enter an amount'); return; }
+  const entry = {type, cat, amount:parseInt(amount), note, date:new Date().toLocaleDateString('en-IN')};
+  state.expenses.unshift(entry);
+  localStorage.setItem('agri_expenses', JSON.stringify(state.expenses.slice(0,50)));
+  closeModal('expense-modal');
+  renderExpenses();
+  showToast(`${type} of ₹${parseInt(amount).toLocaleString()} added`);
+}
+
+function renderExpenses() {
+  const inc = state.expenses.filter(e=>e.type==='Income').reduce((s,e)=>s+e.amount,0);
+  const exp = state.expenses.filter(e=>e.type==='Expense').reduce((s,e)=>s+e.amount,0);
+  const list = state.expenses.slice(0,5).map(e=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span>${e.type==='Income'?'📈':'📉'}</span>
+      <div style="flex:1"><div style="font-weight:500">${e.cat}</div><div style="font-size:11px;color:var(--text3)">${e.date} ${e.note?'· '+e.note:''}</div></div>
+      <div style="font-weight:600;color:${e.type==='Income'?'var(--accent)':'#e24b4a'}">${e.type==='Income'?'+':'-'}₹${e.amount.toLocaleString()}</div>
+    </div>
+  `).join('');
+  document.getElementById('expense-list').innerHTML = `
+    <div class="grid-2" style="gap:8px;margin-bottom:12px">
+      <div style="background:var(--surface2);padding:10px;border-radius:var(--radius-sm);text-align:center">
+        <div style="font-size:11px;color:var(--text3)">Total income</div>
+        <div style="font-size:16px;font-weight:700;color:var(--accent)">₹${inc.toLocaleString()}</div>
+      </div>
+      <div style="background:var(--surface2);padding:10px;border-radius:var(--radius-sm);text-align:center">
+        <div style="font-size:11px;color:var(--text3)">Total expenses</div>
+        <div style="font-size:16px;font-weight:700;color:#e24b4a">₹${exp.toLocaleString()}</div>
+      </div>
+    </div>
+    ${list || '<div style="font-size:13px;color:var(--text3);text-align:center;padding:16px">No records yet</div>'}
+  `;
+}
+
+function renderNotifications() {
+  const notifs = [
+    {emoji:'🌧️',text:'Rain forecast Wednesday — postpone spraying',time:'2h ago'},
+    {emoji:'💰',text:'PM-KISAN instalment due for verification',time:'1d ago'},
+    {emoji:'✅',text:'Vehicle booking BK001 confirmed',time:'2d ago'},
+    {emoji:'📈',text:'Turmeric prices at 6-month high — consider selling',time:'3d ago'},
+  ];
+  document.getElementById('notif-list').innerHTML = notifs.map(n=>`
+    <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:18px">${n.emoji}</span>
+      <div><div style="font-size:13px;color:var(--text)">${n.text}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${n.time}</div></div>
+    </div>
+  `).join('');
+}
+
+// ====== UTILS ======
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+// ====== BOOT ======
+const savedUser = localStorage.getItem('agri_user');
+if (savedUser) {
+  try { loginUser(JSON.parse(savedUser)); } catch(e) { /* show auth */ }
+}
+
+// Set today's date
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().split('T')[0];
+  const bd = document.getElementById('book-date');
+  if (bd) bd.value = today;
+  document.getElementById('book-dur').addEventListener('change', updatePrice);
+
+  loadRealTimeWeather();
+});
+</script>
+</body>
+</html>
